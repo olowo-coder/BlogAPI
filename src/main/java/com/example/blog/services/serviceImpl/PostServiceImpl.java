@@ -29,7 +29,6 @@ public class PostServiceImpl implements PostService {
 
     public List<PostMessage> getAllPost(){
         return postRepository.findAll();
-//        return postRepository.findAll(Sort.by(Sort.Direction.DESC, "postId"));
     }
 
 

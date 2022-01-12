@@ -133,10 +133,9 @@ public class UserController {
         return ResponseEntity.ok().body("Connected");
     }
 
-    @PostMapping("/user/{userId}/connect")
+    @GetMapping("/user/{userId}/connect")
     public ResponseEntity<?> allOfUsers(@PathVariable Long userId){
-
-        return ResponseEntity.ok().body("Connected");
+        return new ResponseEntity<>(userService.getAllFriendByUserId(userId), HttpStatus.OK);
     }
 
 }

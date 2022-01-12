@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@Transactional
 public class UserServiceImpl implements UsersService {
     private final UserRepository userRepository;
     private final FriendsRepository friendsRepository;
@@ -59,19 +60,23 @@ public class UserServiceImpl implements UsersService {
         return userRepository.findById(userId).get();
     }
 
-    @Transactional
-    @Scheduled(fixedDelay = 10000)  // 10 Seconds
+
+//    @Scheduled(fixedDelay = 10000)  // 10 Seconds
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
 
     @Override
     public void connectFriends(Long userId, Long friendId) {
-        Users user = getUserById(userId);
         Users friend = getUserById(friendId);
         Friends connections = new Friends();
-        connections.setUsers(user);
+        connections.setUser(userId);
         connections.setFriends(friend);
         friendsRepository.save(connections);
+    }
+
+    @Override
+    public List<Friends> getAllFriendByUserId(Long userId) {
+        return friendsRepository.getAllByUser(userId);
     }
 }

@@ -26,22 +26,14 @@ public class Friends {
     private Long friendsId;
 
 
-    @ManyToOne(
-            cascade = CascadeType.MERGE,
-            fetch = FetchType.EAGER
-    )
-    @JoinColumn(
-            name = "users_id",
-            referencedColumnName = "userId"
-    )
-    private Users users;
+    private Long user;
 
     @ManyToOne(
             cascade = CascadeType.MERGE,
             fetch = FetchType.EAGER
     )
     @JoinColumn(
-            name = "friends_id",
+            name = "friend_id",
             referencedColumnName = "userId"
     )
     private Users friends;
