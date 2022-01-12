@@ -124,4 +124,19 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/user/{userId}/connect/{friendId}")
+    public ResponseEntity<?> makeFriends(@PathVariable Long userId, @PathVariable Long friendId){
+        if(userId.equals(friendId)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Cannot connect to yourself");
+        }
+        userService.connectFriends(userId, friendId);
+        return ResponseEntity.ok().body("Connected");
+    }
+
+    @PostMapping("/user/{userId}/connect")
+    public ResponseEntity<?> allOfUsers(@PathVariable Long userId){
+
+        return ResponseEntity.ok().body("Connected");
+    }
+
 }

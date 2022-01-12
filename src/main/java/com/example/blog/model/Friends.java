@@ -23,7 +23,7 @@ public class Friends {
             strategy = GenerationType.SEQUENCE,
             generator = "friends_sequence"
     )
-    private Long postId;
+    private Long friendsId;
 
 
     @ManyToOne(
@@ -35,4 +35,14 @@ public class Friends {
             referencedColumnName = "userId"
     )
     private Users users;
+
+    @ManyToOne(
+            cascade = CascadeType.MERGE,
+            fetch = FetchType.EAGER
+    )
+    @JoinColumn(
+            name = "friends_id",
+            referencedColumnName = "userId"
+    )
+    private Users friends;
 }

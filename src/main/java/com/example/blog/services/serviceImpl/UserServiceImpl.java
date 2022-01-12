@@ -1,20 +1,16 @@
 package com.example.blog.services.serviceImpl;
 
+import com.example.blog.model.Friends;
 import com.example.blog.model.Users;
+import com.example.blog.repository.FriendsRepository;
 import com.example.blog.repository.UserRepository;
 import com.example.blog.services.UsersService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,10 +18,12 @@ import java.util.Optional;
 @Slf4j
 public class UserServiceImpl implements UsersService {
     private final UserRepository userRepository;
+    private final FriendsRepository friendsRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, FriendsRepository friendsRepository) {
         this.userRepository = userRepository;
+        this.friendsRepository = friendsRepository;
     }
 
     public List<Users> getAllUsers(){
@@ -65,5 +63,15 @@ public class UserServiceImpl implements UsersService {
     @Scheduled(fixedDelay = 10000)  // 10 Seconds
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public void connectFriends(Long userId, Long friendId) {
+        Users user = getUserById(userId);
+        Users friend = getUserById(friendId);
+        Friends connections = new Friends();
+        connections.setUsers(user);
+        connections.setFriends(friend);
+        friendsRepository.save(connections);
     }
 }
