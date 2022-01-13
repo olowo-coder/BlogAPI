@@ -8,6 +8,10 @@ import com.example.blog.repository.PostRepository;
 import com.example.blog.repository.UserRepository;
 import com.example.blog.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +33,11 @@ public class PostServiceImpl implements PostService {
 
     public List<PostMessage> getAllPost(){
         return postRepository.findAll();
+    }
+
+    public Page<PostMessage> pageGetAllPosts(String byWhat, int next){
+        Pageable firstPageElements = PageRequest.of(0, next, Sort.by(byWhat).ascending());
+        return postRepository.findAll(firstPageElements);
     }
 
 

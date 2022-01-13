@@ -48,9 +48,21 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getAllUsers());
     }
 
+    @GetMapping("/all/page")
+    public ResponseEntity<?> pageAllUsers(@RequestParam(value = "by") String by,
+                                          @RequestParam(value = "next", defaultValue = "2") int next){
+        return ResponseEntity.ok().body(userService.pageGetAllUsers(by, next));
+    }
+
     @GetMapping("/post/all")
     public ResponseEntity<?> getAllPost(){
         return ResponseEntity.ok().body(postService.getAllPost());
+    }
+
+    @GetMapping("post/all/page")
+    public ResponseEntity<?> pageAllPosts(@RequestParam(value = "by") String by,
+                                          @RequestParam(value = "next", defaultValue = "2") int next){
+        return ResponseEntity.ok().body(postService.pageGetAllPosts(by, next));
     }
 
     @GetMapping("/comment/all")

@@ -2,7 +2,9 @@ package com.example.blog.services;
 
 import com.example.blog.model.Friends;
 import com.example.blog.model.Users;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,8 @@ import java.util.Optional;
 @Service
 public interface UsersService {
     List<Users> getAllUsers();
+
+    Page<Users> pageGetAllUsers(String name, int next);
 
     boolean addUser(Users user);
 

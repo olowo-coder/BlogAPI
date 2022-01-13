@@ -2,11 +2,14 @@ package com.example.blog.services;
 
 import com.example.blog.model.FavoritePost;
 import com.example.blog.model.PostMessage;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface PostService {
     List<PostMessage> getAllPost();
+
+    Page<PostMessage> pageGetAllPosts(String byWhat, int next);
 
     boolean addNewPost(PostMessage postMessage);
 

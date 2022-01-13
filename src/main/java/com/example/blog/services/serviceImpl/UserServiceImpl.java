@@ -7,6 +7,10 @@ import com.example.blog.repository.UserRepository;
 import com.example.blog.services.UsersService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +33,11 @@ public class UserServiceImpl implements UsersService {
 
     public List<Users> getAllUsers(){
         return userRepository.findAll();
+    }
+
+    public Page<Users> pageGetAllUsers(String byWhat, int next){
+        Pageable firstPageWithTwoElements = PageRequest.of(0, next, Sort.by(byWhat).ascending());
+        return userRepository.findAll(firstPageWithTwoElements);
     }
 
     public boolean addUser(Users user){
