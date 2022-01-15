@@ -1,5 +1,6 @@
 package com.example.blog.services;
 
+import com.example.blog.dto.UsersDto;
 import com.example.blog.model.Friends;
 import com.example.blog.model.Users;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public interface UsersService {
@@ -17,7 +19,7 @@ public interface UsersService {
 
     Page<Users> pageGetAllUsers(String name, int next);
 
-    boolean addUser(Users user);
+    boolean addUser(UsersDto user);
 
     String validateUser(Users user);
 
@@ -25,7 +27,7 @@ public interface UsersService {
 
     Users getUserById(Long userId);
 
-    void deleteUser(Long userId);
+    CompletableFuture<String> deleteUser(Long userId) throws InterruptedException;
 
     void connectFriends(Long userId, Long friendId);
 

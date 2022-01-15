@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.example.blog.dto.UsersDto;
 import com.example.blog.model.Friends;
 import com.example.blog.model.Users;
 import com.example.blog.repository.FriendsRepository;
@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -49,6 +51,17 @@ class UserServiceImplTest {
     }
 
     @Test
+    void testPageGetAllUsers() {
+        PageImpl<Users> pageImpl = new PageImpl<>(new ArrayList<>());
+        when(this.userRepository.findAll((org.springframework.data.domain.Pageable) any())).thenReturn(pageImpl);
+        Page<Users> actualPageGetAllUsersResult = this.userServiceImpl.pageGetAllUsers("By What", 1);
+        assertSame(pageImpl, actualPageGetAllUsersResult);
+        assertTrue(actualPageGetAllUsersResult.toList().isEmpty());
+        verify(this.userRepository).findAll((org.springframework.data.domain.Pageable) any());
+        assertTrue(this.userServiceImpl.getAllUsers().isEmpty());
+    }
+
+    @Test
     void testAddUser() {
         Users users = new Users();
         users.setEmail("jane.doe@example.org");
@@ -56,18 +69,19 @@ class UserServiceImplTest {
         users.setLastName("Doe");
         users.setPassword("iloveyou");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         Optional<Users> ofResult = Optional.of(users);
         when(this.userRepository.findByEmail((String) any())).thenReturn(ofResult);
 
-        Users users1 = new Users();
-        users1.setEmail("jane.doe@example.org");
-        users1.setFirstName("Jane");
-        users1.setLastName("Doe");
-        users1.setPassword("iloveyou");
-        users1.setPhone("4105551212");
-        users1.setUserId(123L);
-        assertTrue(this.userServiceImpl.addUser(users1));
+        UsersDto usersDto = new UsersDto();
+        usersDto.setEmail("jane.doe@example.org");
+        usersDto.setFirstName("Jane");
+        usersDto.setLastName("Doe");
+        usersDto.setPassword("iloveyou");
+        usersDto.setPhone("4105551212");
+        usersDto.setStatus(true);
+        assertTrue(this.userServiceImpl.addUser(usersDto));
         verify(this.userRepository).findByEmail((String) any());
         assertTrue(this.userServiceImpl.getAllUsers().isEmpty());
     }
@@ -80,18 +94,19 @@ class UserServiceImplTest {
         users.setLastName("Doe");
         users.setPassword("iloveyou");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         when(this.userRepository.save((Users) any())).thenReturn(users);
         when(this.userRepository.findByEmail((String) any())).thenReturn(Optional.empty());
 
-        Users users1 = new Users();
-        users1.setEmail("jane.doe@example.org");
-        users1.setFirstName("Jane");
-        users1.setLastName("Doe");
-        users1.setPassword("iloveyou");
-        users1.setPhone("4105551212");
-        users1.setUserId(123L);
-        assertFalse(this.userServiceImpl.addUser(users1));
+        UsersDto usersDto = new UsersDto();
+        usersDto.setEmail("jane.doe@example.org");
+        usersDto.setFirstName("Jane");
+        usersDto.setLastName("Doe");
+        usersDto.setPassword("iloveyou");
+        usersDto.setPhone("4105551212");
+        usersDto.setStatus(true);
+        assertFalse(this.userServiceImpl.addUser(usersDto));
         verify(this.userRepository).findByEmail((String) any());
         verify(this.userRepository).save((Users) any());
         assertTrue(this.userServiceImpl.getAllUsers().isEmpty());
@@ -105,6 +120,7 @@ class UserServiceImplTest {
         users.setLastName("Doe");
         users.setPassword("iloveyou");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         Optional<Users> ofResult = Optional.of(users);
         when(this.userRepository.findByEmail((String) any())).thenReturn(ofResult);
@@ -115,6 +131,7 @@ class UserServiceImplTest {
         users1.setLastName("Doe");
         users1.setPassword("iloveyou");
         users1.setPhone("4105551212");
+        users1.setStatus(true);
         users1.setUserId(123L);
         assertEquals("valid", this.userServiceImpl.validateUser(users1));
         verify(this.userRepository).findByEmail((String) any());
@@ -129,6 +146,7 @@ class UserServiceImplTest {
         users.setLastName("Doe");
         users.setPassword("valid");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         Optional<Users> ofResult = Optional.of(users);
         when(this.userRepository.findByEmail((String) any())).thenReturn(ofResult);
@@ -139,6 +157,7 @@ class UserServiceImplTest {
         users1.setLastName("Doe");
         users1.setPassword("iloveyou");
         users1.setPhone("4105551212");
+        users1.setStatus(true);
         users1.setUserId(123L);
         assertEquals("Incorrect Password", this.userServiceImpl.validateUser(users1));
         verify(this.userRepository).findByEmail((String) any());
@@ -155,6 +174,7 @@ class UserServiceImplTest {
         users.setLastName("Doe");
         users.setPassword("iloveyou");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         assertEquals("Not Registered Email", this.userServiceImpl.validateUser(users));
         verify(this.userRepository).findByEmail((String) any());
@@ -169,6 +189,7 @@ class UserServiceImplTest {
         users.setLastName("Doe");
         users.setPassword("iloveyou");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         Optional<Users> ofResult = Optional.of(users);
         when(this.userRepository.findByEmail((String) any())).thenReturn(ofResult);
@@ -187,19 +208,12 @@ class UserServiceImplTest {
         users.setLastName("Doe");
         users.setPassword("iloveyou");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         Optional<Users> ofResult = Optional.of(users);
         when(this.userRepository.findById((Long) any())).thenReturn(ofResult);
         assertSame(users, this.userServiceImpl.getUserById(123L));
         verify(this.userRepository).findById((Long) any());
-        assertTrue(this.userServiceImpl.getAllUsers().isEmpty());
-    }
-
-    @Test
-    void testDeleteUser() {
-        doNothing().when(this.userRepository).deleteById((Long) any());
-        this.userServiceImpl.deleteUser(123L);
-        verify(this.userRepository).deleteById((Long) any());
         assertTrue(this.userServiceImpl.getAllUsers().isEmpty());
     }
 
@@ -211,6 +225,7 @@ class UserServiceImplTest {
         users.setLastName("Doe");
         users.setPassword("iloveyou");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         Optional<Users> ofResult = Optional.of(users);
         when(this.userRepository.findById((Long) any())).thenReturn(ofResult);
@@ -221,6 +236,7 @@ class UserServiceImplTest {
         users1.setLastName("Doe");
         users1.setPassword("iloveyou");
         users1.setPhone("4105551212");
+        users1.setStatus(true);
         users1.setUserId(123L);
 
         Friends friends = new Friends();

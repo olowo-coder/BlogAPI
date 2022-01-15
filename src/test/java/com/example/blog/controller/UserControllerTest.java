@@ -3,11 +3,12 @@ package com.example.blog.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.example.blog.dto.UsersDto;
 import com.example.blog.model.Users;
 import com.example.blog.repository.CommentRepository;
 import com.example.blog.repository.FavoritePostRepository;
@@ -29,11 +30,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -97,6 +100,7 @@ class UserControllerTest {
         users.setLastName("Doe");
         users.setPassword("iloveyou");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         UserRepository userRepository = mock(UserRepository.class);
         when(userRepository.findByEmail((String) any())).thenReturn(Optional.of(users));
@@ -109,14 +113,14 @@ class UserControllerTest {
         UserController userController = new UserController(userService, postService, commentService,
                 new LikeServiceImpl(mock(LikeRepository.class), mock(LikeCommentRepository.class)));
 
-        Users users1 = new Users();
-        users1.setEmail("jane.doe@example.org");
-        users1.setFirstName("Jane");
-        users1.setLastName("Doe");
-        users1.setPassword("iloveyou");
-        users1.setPhone("4105551212");
-        users1.setUserId(123L);
-        ResponseEntity<?> actualAddUsersResult = userController.addUsers(users1, new MockHttpServletRequest());
+        UsersDto usersDto = new UsersDto();
+        usersDto.setEmail("jane.doe@example.org");
+        usersDto.setFirstName("Jane");
+        usersDto.setLastName("Doe");
+        usersDto.setPassword("iloveyou");
+        usersDto.setPhone("4105551212");
+        usersDto.setStatus(true);
+        ResponseEntity<?> actualAddUsersResult = userController.addUsers(usersDto, new MockHttpServletRequest());
         assertEquals("Email Taken", actualAddUsersResult.getBody());
         assertEquals("<200 OK OK,Email Taken,[]>", actualAddUsersResult.toString());
         assertEquals(HttpStatus.OK, actualAddUsersResult.getStatusCode());
@@ -132,6 +136,7 @@ class UserControllerTest {
         users.setLastName("Doe");
         users.setPassword("iloveyou");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         UserRepository userRepository = mock(UserRepository.class);
         when(userRepository.save((Users) any())).thenReturn(users);
@@ -145,14 +150,14 @@ class UserControllerTest {
         UserController userController = new UserController(userService, postService, commentService,
                 new LikeServiceImpl(mock(LikeRepository.class), mock(LikeCommentRepository.class)));
 
-        Users users1 = new Users();
-        users1.setEmail("jane.doe@example.org");
-        users1.setFirstName("Jane");
-        users1.setLastName("Doe");
-        users1.setPassword("iloveyou");
-        users1.setPhone("4105551212");
-        users1.setUserId(123L);
-        ResponseEntity<?> actualAddUsersResult = userController.addUsers(users1, new MockHttpServletRequest());
+        UsersDto usersDto = new UsersDto();
+        usersDto.setEmail("jane.doe@example.org");
+        usersDto.setFirstName("Jane");
+        usersDto.setLastName("Doe");
+        usersDto.setPassword("iloveyou");
+        usersDto.setPhone("4105551212");
+        usersDto.setStatus(true);
+        ResponseEntity<?> actualAddUsersResult = userController.addUsers(usersDto, new MockHttpServletRequest());
         assertEquals("User added", actualAddUsersResult.getBody());
         assertEquals("<201 CREATED Created,User added,[]>", actualAddUsersResult.toString());
         assertEquals(HttpStatus.CREATED, actualAddUsersResult.getStatusCode());
@@ -163,22 +168,11 @@ class UserControllerTest {
 
     @Test
     void testDeleteUser() throws Exception {
-        doNothing().when(this.usersService).deleteUser((Long) any());
+        when(this.usersService.deleteUser((Long) any())).thenReturn(new CompletableFuture<>());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/blog/user/{userId}", 123L);
         ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(this.userController)
                 .build()
                 .perform(requestBuilder);
-        actualPerformResult.andExpect(MockMvcResultMatchers.status().isNoContent());
-    }
-
-    @Test
-    void testDeleteUser2() throws Exception {
-        doNothing().when(this.usersService).deleteUser((Long) any());
-        MockHttpServletRequestBuilder deleteResult = MockMvcRequestBuilders.delete("/blog/user/{userId}", 123L);
-        deleteResult.characterEncoding("Encoding");
-        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(this.userController)
-                .build()
-                .perform(deleteResult);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
@@ -341,6 +335,7 @@ class UserControllerTest {
         users.setLastName("Doe");
         users.setPassword("iloveyou");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         String content = (new ObjectMapper()).writeValueAsString(users);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/blog/sign-in")
@@ -365,6 +360,7 @@ class UserControllerTest {
         users.setLastName("Doe");
         users.setPassword("iloveyou");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         String content = (new ObjectMapper()).writeValueAsString(users);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/blog/sign-in")
@@ -389,6 +385,7 @@ class UserControllerTest {
         users.setLastName("Doe");
         users.setPassword("iloveyou");
         users.setPhone("4105551212");
+        users.setStatus(true);
         users.setUserId(123L);
         String content = (new ObjectMapper()).writeValueAsString(users);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/blog/sign-in")
@@ -442,6 +439,40 @@ class UserControllerTest {
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andExpect(MockMvcResultMatchers.content().contentType("text/plain;charset=ISO-8859-1"))
                 .andExpect(MockMvcResultMatchers.content().string("Cannot connect to yourself"));
+    }
+
+    @Test
+    void testPageAllPosts() throws Exception {
+        when(this.postService.pageGetAllPosts((String) any(), anyInt())).thenReturn(new PageImpl<>(new ArrayList<>()));
+        MockHttpServletRequestBuilder paramResult = MockMvcRequestBuilders.get("/blog/post/all/page").param("by", "foo");
+        MockHttpServletRequestBuilder requestBuilder = paramResult.param("next", String.valueOf(1));
+        MockMvcBuilders.standaloneSetup(this.userController)
+                .build()
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(
+                                "{\"content\":[],\"pageable\":\"INSTANCE\",\"totalPages\":1,\"totalElements\":0,\"last\":true,\"size\":0,"
+                                        + "\"numberOfElements\":0,\"first\":true,\"number\":0,\"sort\":{\"empty\":true,\"unsorted\":true,\"sorted\":false"
+                                        + "},\"empty\":true}"));
+    }
+
+    @Test
+    void testPageAllUsers() throws Exception {
+        when(this.usersService.pageGetAllUsers((String) any(), anyInt())).thenReturn(new PageImpl<>(new ArrayList<>()));
+        MockHttpServletRequestBuilder paramResult = MockMvcRequestBuilders.get("/blog/all/page").param("by", "foo");
+        MockHttpServletRequestBuilder requestBuilder = paramResult.param("next", String.valueOf(1));
+        MockMvcBuilders.standaloneSetup(this.userController)
+                .build()
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(
+                                "{\"content\":[],\"pageable\":\"INSTANCE\",\"totalPages\":1,\"totalElements\":0,\"last\":true,\"size\":0,"
+                                        + "\"numberOfElements\":0,\"first\":true,\"number\":0,\"sort\":{\"empty\":true,\"unsorted\":true,\"sorted\":false"
+                                        + "},\"empty\":true}"));
     }
 
     @Test

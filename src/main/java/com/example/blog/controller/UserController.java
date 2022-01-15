@@ -1,6 +1,7 @@
 package com.example.blog.controller;
 
 
+import com.example.blog.dto.UsersDto;
 import com.example.blog.model.Comment;
 import com.example.blog.model.PostMessage;
 import com.example.blog.model.Users;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -93,7 +95,7 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addUsers(@RequestBody Users user, HttpServletRequest request){
+    public ResponseEntity<?> addUsers(@Valid @RequestBody UsersDto user, HttpServletRequest request){
         HttpSession session = request.getSession();
         boolean check = userService.addUser(user);
         if(check){
@@ -131,7 +133,7 @@ public class UserController {
     }
 
     @DeleteMapping("user/{userId}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long userId){
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) throws InterruptedException {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
