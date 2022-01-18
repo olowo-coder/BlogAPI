@@ -17,8 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -27,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 public class UserServiceImpl implements UsersService {
     private final UserRepository userRepository;
     private final FriendsRepository friendsRepository;
+    private Map<Long, String> listOfuserIdForDeactivate = new HashMap();
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, FriendsRepository friendsRepository) {
@@ -83,15 +83,18 @@ public class UserServiceImpl implements UsersService {
 
 @Async
     public CompletableFuture<String> deleteUser(Long userId) throws InterruptedException {
+        listOfuserIdForDeactivate.put(userId, getUserById(userId).getEmail());
         log.info("Counting down to delete");
         Thread.sleep(30000L); // 30 sec
         if (userRepository.findById(userId).get().getStatus()){
             log.info("inside here");
             log.info("executed");
+            listOfuserIdForDeactivate.remove(userId);
             return CompletableFuture.completedFuture("restored");
         }
         log.info("actually done deleting");
         userRepository.deleteById(userId);
+        listOfuserIdForDeactivate.remove(userId);
         return CompletableFuture.completedFuture("deleted");
     }
 
